@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Amiri", "Georgia", serif;
+  --font-arabic: "Amiri", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* Latar belakang dasar website: Hijau Paling Gelap (Nyaris Hitam) */
+  background-color: #011b15; 
+  /* Warna teks utama: Putih Bersih */
+  color: #ffffff; 
+}
+
+.pattern-bg {
+  /* Dot pattern dengan sentuhan kilau emas yang sedikit lebih tegas */
+  background-image: radial-gradient(circle at 1px 1px, rgba(245, 158, 11, 0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* ==================== INPUTS & LABELS ==================== */
+.input {
+  @apply w-full rounded-xl border border-emerald-800 bg-emerald-950 px-4 py-3 text-sm text-white placeholder:text-emerald-500 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/30 shadow-inner transition-all;
+}
+.label {
+  @apply mb-2 block text-xs font-bold uppercase tracking-wider text-amber-400/90;
+}
+
+/* ==================== BADGES ==================== */
+.badge {
+  @apply inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-extrabold tracking-widest uppercase;
+}
+
+.badge-terjadwal {
+  @apply bg-emerald-900 text-white border border-emerald-700;
+}
+.badge-berlangsung {
+  @apply bg-amber-500/20 text-amber-400 border border-amber-500/50 animate-pulse;
+}
+.badge-selesai {
+  @apply bg-emerald-950 text-emerald-500 border border-emerald-800/80;
+}
+.badge-dibatalkan {
+  @apply bg-red-950 text-red-400 border border-red-800/80;
+}
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 shadow-sm;
+}
+.btn-primary {
+  /* Teks pada tombol emas sekarang menggunakan warna hijau paling gelap agar harmonis */
+  @apply bg-amber-500 text-emerald-950 hover:bg-amber-400 hover:shadow-lg hover:shadow-amber-500/20 border border-amber-400;
+}
+.btn-secondary {
+  @apply bg-emerald-900/80 text-white border border-emerald-700 hover:bg-emerald-800 hover:border-amber-500/50 hover:text-amber-300;
+}
+.btn-danger {
+  @apply bg-red-600/90 text-white border border-red-500 hover:bg-red-500;
+}
+.btn-gold {
+  @apply bg-gradient-to-r from-amber-500 to-amber-400 text-emerald-950 font-extrabold hover:from-amber-400 hover:to-amber-300 shadow-md shadow-amber-500/20;
+}
+
+/* ==================== TYPOGRAPHY ==================== */
+.section-title {
+  @apply text-3xl md:text-4xl font-display font-bold text-white leading-tight;
+}
+.section-eyebrow {
+  /* Efek pill (kapsul) emas transparan untuk teks kecil di atas judul */
+  @apply text-xs font-extrabold uppercase tracking-widest text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 inline-block;
+}
