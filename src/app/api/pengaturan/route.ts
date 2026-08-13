@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCurrentAdmin } from "@/lib/auth";
 
+export const dynamic = "force-dynamic"; // <-- WAJIB ADA DI SINI
+
 export async function GET() {
   const result = await db.execute("SELECT * FROM pengaturan WHERE id = 1");
   const pengaturan = result.rows[0];
