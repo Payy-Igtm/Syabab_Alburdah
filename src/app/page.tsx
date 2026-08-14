@@ -6,8 +6,8 @@ import IslamicOrnaments from "@/components/IslamicOrnaments";
 import CountUp from "@/components/CountUp";
 
 export const dynamic = "force-dynamic"; 
-export const fetchCache = "force-no-store"; // <-- Tambahan wajib 1
-export const revalidate = 0; // <-- Tambahan wajib 2
+export const fetchCache = "default-cache";
+export const revalidate = 10; // Dioptimalkan agar halaman terbuka instan namun tetap sinkron
 
 async function getPengaturan(): Promise<Pengaturan> {
   const result = await db.execute("SELECT * FROM pengaturan WHERE id = 1");
@@ -15,11 +15,13 @@ async function getPengaturan(): Promise<Pengaturan> {
 }
 
 async function getRingkasanJadwal() {
-  const totalRes = await db.execute("SELECT COUNT(*) as c FROM jadwal");
-  const total = Number(totalRes.rows[0]?.c || 0);
+  const total = 40; // Total hari program selalu ditetapkan 40 hari
 
-  const terisiRes = await db.execute("SELECT COUNT(*) as c FROM jadwal WHERE tuan_rumah <> ''");
-  const terisi = Number(terisiRes.rows[0]?.c || 0);
+  // Menghitung jumlah hari unik (hari_ke) yang sudah terisi tuan rumahnya
+  const terisiRes = await db.execute(
+    "SELECT DISTINCT hari_ke FROM jadwal WHERE tuan_rumah <> '' AND tuan_rumah IS NOT NULL"
+  );
+  const terisi = terisiRes.rows.length;
 
   const berikutnyaRes = await db.execute(
     "SELECT * FROM jadwal WHERE date(tanggal) >= date('now') ORDER BY date(tanggal) ASC LIMIT 1"

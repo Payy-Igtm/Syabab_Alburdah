@@ -16,6 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   const body = await req.json();
 
+  // Gunakan data dari body secara aman tanpa menimpa status/tuan rumah dengan paksa
   await db.execute({
     sql: `UPDATE jadwal SET
       hari_ke = ?,
@@ -28,17 +29,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       catatan = ?,
       status = ?,
       updated_at = datetime('now')
-     WHERE id = ?`,
+      WHERE id = ?`,
     args: [
-      Number(body.hari_ke),
-      String(body.tanggal),
-      body.waktu || "20:00",
-      body.tuan_rumah || "",
-      body.alamat || "",
-      body.penanggung_jawab || "",
-      body.kontak_pj || "",
-      body.catatan || "",
-      body.status || "terjadwal",
+      Number(body.hari_ke) || Number(existing.hari_ke),
+      String(body.tanggal || existing.tanggal),
+      body.waktu !== undefined ? body.waktu : existing.waktu,
+      body.tuan_rumah !== undefined ? body.tuan_rumah : existing.tuan_rumah,
+      body.alamat !== undefined ? body.alamat : existing.alamat,
+      body.penanggung_jawab !== undefined ? body.penanggung_jawab : existing.penanggung_jawab,
+      body.kontak_pj !== undefined ? body.kontak_pj : existing.kontak_pj,
+      body.catatan !== undefined ? body.catatan : existing.catatan,
+      body.status !== undefined ? body.status : existing.status,
       id,
     ],
   });

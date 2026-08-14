@@ -41,7 +41,7 @@ export async function initializeDatabase() {
       penanggung_jawab TEXT NOT NULL DEFAULT '',
       kontak_pj TEXT NOT NULL DEFAULT '',
       catatan TEXT NOT NULL DEFAULT '',
-      status TEXT NOT NULL DEFAULT 'terjadwal', -- terjadwal | berlangsung | selesai | dibatalkan
+      status TEXT NOT NULL DEFAULT 'terjadwal',
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -71,14 +71,14 @@ export async function initializeDatabase() {
       tentang_burdah TEXT NOT NULL DEFAULT '',
       asal_usul TEXT NOT NULL DEFAULT '',
       visi TEXT NOT NULL DEFAULT '',
-      misi TEXT NOT NULL DEFAULT '[]',      -- JSON array string
-      tanggal_mulai_program TEXT NOT NULL, -- YYYY-MM-DD, hari ke-1
+      misi TEXT NOT NULL DEFAULT '[]',
+      tanggal_mulai_program TEXT NOT NULL,
       alamat_sekretariat TEXT NOT NULL DEFAULT '',
       no_whatsapp TEXT NOT NULL DEFAULT '',
       email TEXT NOT NULL DEFAULT '',
       instagram TEXT NOT NULL DEFAULT '',
       facebook TEXT NOT NULL DEFAULT '',
-      info_tambahan TEXT NOT NULL DEFAULT '[]', -- JSON array of {judul, isi}
+      info_tambahan TEXT NOT NULL DEFAULT '[]',
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
@@ -94,13 +94,14 @@ export async function initializeDatabase() {
       sql: "INSERT INTO admin (username, password_hash, nama) VALUES (?, ?, ?)",
       args: [username, hash, "Administrator Syabab Al-Burdah"],
     });
-    console.log(`[SEED] Akun admin dibuat -> username: ${username} | password: ${password}`);
+    console.log(`[SEED] Akun admin dibuat.`);
   }
 
-  // Seed Pengaturan
-  const pengaturanRes = await db.execute("SELECT COUNT(*) as c FROM pengaturan");
-  const pengaturanCount = Number(pengaturanRes.rows[0]?.c ?? 0);
-  if (pengaturanCount === 0) {
+  // --- PERBAIKAN SEED PENGATURAN (Anti Reset) ---
+  // Cek apakah data pengaturan dengan ID 1 sudah ada. Jika sudah ada, jangan lakukan apa-apa.
+  const checkPengaturan = await db.execute("SELECT id FROM pengaturan WHERE id = 1");
+  
+  if (checkPengaturan.rows.length === 0) {
     const today = new Date();
     const tanggalMulai = today.toISOString().slice(0, 10);
 
@@ -113,18 +114,9 @@ export async function initializeDatabase() {
     ]);
 
     const infoTambahan = JSON.stringify([
-      {
-        judul: "Apa yang perlu dibawa jamaah?",
-        isi: "Jamaah cukup membawa Kitab Burdah/blangko bacaan (jika punya) dan hadir dengan hati yang bersih. Panitia akan menyediakan teks bacaan bagi yang belum memiliki.",
-      },
-      {
-        judul: "Ketentuan tuan rumah",
-        isi: "Tuan rumah yang mendapat giliran cukup menyiapkan tempat yang layak. Konsumsi bersifat sunnah/sukarela dan tidak memberatkan.",
-      },
-      {
-        judul: "Kontak Panitia",
-        isi: "Untuk informasi lebih lanjut mengenai jadwal atau ingin bergabung dalam majelis, silakan hubungi kontak yang tertera pada halaman Informasi.",
-      },
+      { judul: "Apa yang perlu dibawa jamaah?", isi: "Jamaah cukup membawa Kitab Burdah..." },
+      { judul: "Ketentuan tuan rumah", isi: "Tuan rumah yang mendapat giliran cukup menyiapkan tempat yang layak..." },
+      { judul: "Kontak Panitia", isi: "Untuk informasi lebih lanjut..." },
     ]);
 
     await db.execute({
@@ -134,20 +126,16 @@ export async function initializeDatabase() {
       args: [
         "Syabab Al-Burdah",
         "Menghidupkan Cinta Rasulullah Melalui Lantunan Burdah",
-        "Maulid Burdah adalah tradisi pembacaan Qasidah Burdah, sebuah syair pujian agung kepada Nabi Muhammad shallallahu 'alaihi wasallam karya Imam Al-Bushiri...",
-        "Qasidah Burdah digubah oleh Imam Syarafuddin Al-Bushiri pada abad ke-13 M di Mesir...",
-        "Menjadi wadah silaturahmi dan syiar islam yang menghidupkan kecintaan kepada Rasulullah SAW...",
+        "Maulid Burdah adalah tradisi pembacaan Qasidah Burdah...",
+        "Qasidah Burdah digubah oleh Imam Syarafuddin Al-Bushiri...",
+        "Menjadi wadah silaturahmi...",
         misi,
         tanggalMulai,
         "Sekretariat Syabab Al-Burdah",
-        "",
-        "",
-        "",
-        "",
-        infoTambahan,
+        "", "", "", "", infoTambahan,
       ],
     });
-    console.log("[SEED] Data pengaturan awal berhasil dibuat.");
+    console.log("[SEED] Pengaturan awal berhasil dibuat.");
   }
 
   // Seed Jadwal (40 Hari)
@@ -155,10 +143,7 @@ export async function initializeDatabase() {
   const jadwalCount = Number(jadwalRes.rows[0]?.c ?? 0);
   if (jadwalCount === 0) {
     const pengaturanProg = await db.execute("SELECT tanggal_mulai_program FROM pengaturan WHERE id = 1");
-    
-    // BAGIAN YANG DIPERBAIKI: Menambahkan "unknown"
     const rowProg = pengaturanProg.rows[0] as unknown as { tanggal_mulai_program: string } | undefined;
-    
     const start = rowProg ? new Date(rowProg.tanggal_mulai_program) : new Date();
 
     for (let i = 0; i < 40; i++) {
@@ -171,6 +156,6 @@ export async function initializeDatabase() {
         args: [i + 1, tanggalStr],
       });
     }
-    console.log("[SEED] 40 baris jadwal awal (template) berhasil dibuat.");
+    console.log("[SEED] 40 baris jadwal awal berhasil dibuat.");
   }
 }

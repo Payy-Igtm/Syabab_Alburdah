@@ -25,7 +25,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
   const [view, setView] = useState<"timeline" | "daftar">("timeline");
   const [filter, setFilter] = useState<"semua" | "terisi" | "kosong">("semua");
   
-  // State diubah dari selectedId menjadi selectedHari
   const [selectedHari, setSelectedHari] = useState<number | null>(null);
 
   useEffect(() => {
@@ -60,7 +59,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
     });
   }, [sorted, filter]);
 
-  // Mengelompokkan hari agar tombol hari tidak ganda (duplicate)
   const uniqueDays = useMemo(() => {
     const daysMap = new Map<number, { hari: number; isToday: boolean; isKosong: boolean }>();
     
@@ -74,8 +72,8 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
         const existing = daysMap.get(j.hari_ke)!;
         daysMap.set(j.hari_ke, {
           hari: j.hari_ke,
-          isToday: existing.isToday || isToday, // True jika ada SATU jadwal saja yg hari ini
-          isKosong: existing.isKosong && isKosong, // True hanya jika SEMUA jadwal kosong
+          isToday: existing.isToday || isToday,
+          isKosong: existing.isKosong && isKosong,
         });
       }
     });
@@ -85,7 +83,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
   const hariIniItem = sorted.find((j) => j.tanggal === todayStr);
   const berikutnya = sorted.find((j) => j.tanggal > todayStr && j.status !== "dibatalkan" && j.tuan_rumah);
 
-  // Menentukan hari yang aktif saat ini
   const activeHari = selectedHari !== null 
     ? selectedHari 
     : hariIniItem 
@@ -94,7 +91,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
         ? uniqueDays[0].hari 
         : null;
 
-  // Mengambil SEMUA jadwal di hari yang dipilih (untuk fitur multiple sesi)
   const schedulesForDay = useMemo(() => {
     return sorted.filter((j) => j.hari_ke === activeHari);
   }, [sorted, activeHari]);
@@ -114,11 +110,7 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 space-y-6 text-white">
-      
-      {/* TOP DASHBOARD (Jam & Info Hari Ini) */}
       <div className="grid gap-5 sm:grid-cols-2">
-        
-        {/* Jam Digital Live */}
         <div className="rounded-3xl border border-emerald-800/80 bg-emerald-950/40 p-6 shadow-xl flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -137,7 +129,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
           </div>
         </div>
 
-        {/* Status Hari Ini */}
         {hariIniItem && hariIniItem.tuan_rumah ? (
           <div className="rounded-3xl border border-amber-500/30 bg-emerald-950/40 p-6 shadow-xl flex flex-col justify-center">
             <span className="badge badge-berlangsung mb-3 w-fit">Hari ke-{hariIniItem.hari_ke} &middot; Hari Ini</span>
@@ -154,10 +145,8 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
             <p className="text-xs text-emerald-300/70 mt-1">Jadwal hari ini belum diatur atau kosong.</p>
           </div>
         )}
-
       </div>
 
-      {/* COUNTDOWN */}
       {berikutnya && countdown && (
         <div className="rounded-2xl border border-emerald-800/80 bg-emerald-950/40 p-4 px-6 shadow-md flex flex-wrap items-center justify-between gap-3 text-xs">
           <span className="text-emerald-100/90 font-medium">
@@ -172,7 +161,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
         </div>
       )}
 
-      {/* HEADER KONTROL & FILTER */}
       <div className="flex flex-col gap-4 bg-emerald-950/40 border border-emerald-800/80 p-5 rounded-3xl shadow-xl sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-display text-lg font-bold text-white">Perjalanan 40 Hari</h2>
@@ -180,7 +168,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
-          {/* Filter Pills */}
           <div className="flex rounded-full border border-emerald-800/80 bg-[#011b15] p-1">
             {(["semua", "terisi", "kosong"] as const).map((f) => (
               <button
@@ -195,7 +182,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
             ))}
           </div>
 
-          {/* View Mode */}
           <div className="flex rounded-full border border-emerald-800/80 bg-[#011b15] p-1">
             {(["timeline", "daftar"] as const).map((v) => (
               <button
@@ -214,12 +200,9 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
 
       {view === "timeline" ? (
         <div className="space-y-6">
-          {/* TIMELINE STRIP */}
           <div className="bg-emerald-950/40 border border-emerald-800/80 p-5 rounded-3xl shadow-xl">
             <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-300/70 mb-3">Pilih Hari (1 - 40)</p>
             <div className="flex gap-2.5 overflow-x-auto pb-2 pt-1 scrollbar-none">
-              
-              {/* Mapping diubah jadi uniqueDays agar tidak ada tombol duplicate */}
               {uniqueDays.map((dayObj) => {
                 const isSelected = activeHari === dayObj.hari;
                 const { isToday, isKosong } = dayObj;
@@ -252,13 +235,11 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
             </div>
           )}
 
-          {/* SPOTLIGHT DETAIL CARD */}
           {activeHari !== null && schedulesForDay.length > 0 && (() => {
-            const firstSchedule = schedulesForDay[0]; // Dipakai untuk ngambil Tanggal
+            const firstSchedule = schedulesForDay[0];
             const allKosong = schedulesForDay.every((j) => !j.tuan_rumah || (j.status as string) === "");
             const isPast = firstSchedule.tanggal < todayStr || firstSchedule.status === "selesai";
 
-            // Filter out empty sessions if there are valid sessions in the same day
             const validSessions = schedulesForDay.filter(s => s.tuan_rumah);
             const sessionsToDisplay = validSessions.length > 0 ? validSessions : [firstSchedule];
 
@@ -302,9 +283,14 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
                       <p className="mt-1 text-xs text-emerald-300/70 max-w-sm leading-relaxed">
                         Belum ada informasi majelis yang didaftarkan oleh Admin untuk hari ke-{activeHari}.
                       </p>
+                      
+                      {/* DISCLAIMER TAMBAHAN */}
+                      <div className="mt-5 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-200 max-w-sm leading-relaxed text-left">
+                        <span className="font-bold block mb-1 text-amber-400">✨ Catatan Penting:</span>
+                        Jika jadwal kosong, maka pelaksanaan Maulid Burdah tetap dilaksanakan secara mandiri oleh Tim Syabab Al-Burdah dimasjid jami Adz-Dzikro Cibarengkok.
+                      </div>
                     </div>
                   ) : (
-                    // Looping Sesi Jadwal
                     sessionsToDisplay.map((session, index) => (
                       <div key={session.id} className={`relative ${index > 0 ? "pt-8 border-t border-emerald-800/50" : ""}`}>
                         {validSessions.length > 1 && (
@@ -351,7 +337,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
           })()}
         </div>
       ) : (
-        /* VIEW TABEL */
         <div className="overflow-hidden rounded-3xl border border-emerald-800/80 bg-emerald-950/40 shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-emerald-100">
@@ -407,7 +392,6 @@ export default function JadwalRealtime({ initialJadwal }: { initialJadwal: Jadwa
           </div>
         </div>
       )}
-
     </div>
   );
 }

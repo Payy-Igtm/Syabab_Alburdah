@@ -14,17 +14,17 @@ export default function Footer({
   instagram?: string;
 }) {
   return (
-    <footer className="pattern-bg relative mt-20 border-t border-emerald-800/80 bg-emerald-950 text-emerald-100">
+    <footer className="pattern-bg relative mt-20 w-full border-t border-emerald-800/80 bg-emerald-950 text-emerald-100 overflow-hidden">
       {/* Efek gradient shadow di bagian atas footer untuk kesan elegan */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
 
-      <div className="mx-auto max-w-6xl px-4 py-16 md:px-6">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 md:px-6">
         <div className="grid gap-12 md:grid-cols-12">
           
           {/* Kolom 1: Info Grup (Lebih Lebar) */}
           <div className="md:col-span-5">
             <div className="flex items-center gap-4">
-              <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-amber-400/30 bg-[#04100c] shadow-lg shadow-amber-500/10">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-amber-400/30 bg-[#04100c] shadow-lg shadow-amber-500/10">
                 <img src="/logo.jpg" alt={namaGrup} className="h-full w-full object-cover" />
               </span>
               <div>

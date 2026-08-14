@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Jadwal, StatusJadwal } from "@/lib/types";
 
 type FormState = Omit<Jadwal, "id" | "created_at" | "updated_at"> & { id?: number };
@@ -24,6 +25,7 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function JadwalManager({ initialJadwal }: { initialJadwal: Jadwal[] }) {
+  const router = useRouter();
   const [jadwal, setJadwal] = useState<Jadwal[]>(initialJadwal);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -86,6 +88,7 @@ export default function JadwalManager({ initialJadwal }: { initialJadwal: Jadwal
         setJadwal((prev) => [...prev, data.jadwal]);
       }
       setModalOpen(false);
+      router.refresh(); 
     } catch {
       setError("Terjadi kesalahan jaringan.");
     } finally {
@@ -100,6 +103,7 @@ export default function JadwalManager({ initialJadwal }: { initialJadwal: Jadwal
       const res = await fetch(`/api/jadwal/${id}`, { method: "DELETE" });
       if (res.ok) {
         setJadwal((prev) => prev.filter((j) => j.id !== id));
+        router.refresh(); 
       }
     } finally {
       setDeletingId(null);
@@ -108,7 +112,6 @@ export default function JadwalManager({ initialJadwal }: { initialJadwal: Jadwal
 
   return (
     <div className="relative min-h-screen text-emerald-100 overflow-hidden">
-      
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 md:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <input
